@@ -1,7 +1,9 @@
-package telphin_parser;
+package tmtrparser;
 
 import javax.xml.stream.*;
 import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
 
 public class StaxStreamProcessor implements AutoCloseable {
     private static final XMLInputFactory FACTORY = XMLInputFactory.newInstance();
@@ -11,7 +13,11 @@ public class StaxStreamProcessor implements AutoCloseable {
     public StaxStreamProcessor(InputStream is) throws XMLStreamException {
         reader = FACTORY.createXMLStreamReader(is);
     }
-
+    public StaxStreamProcessor(String text) throws XMLStreamException {
+        Reader strreader = new StringReader(text);
+        //XMLInputFactory factory = XMLInputFactory.newInstance(); // Or newFactory()
+        reader = FACTORY.createXMLStreamReader(strreader);
+    }
     public XMLStreamReader getReader() {
         return reader;
     }
@@ -41,6 +47,11 @@ public class StaxStreamProcessor implements AutoCloseable {
     }
     public String getText() throws XMLStreamException {
         return reader.getElementText();
+
     }
+    public String getAllText(){
+        return reader.getText();
+    }
+
 }
 

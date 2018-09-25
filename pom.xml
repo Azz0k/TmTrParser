@@ -8,7 +8,6 @@
   <name>TmTrParser</name>
   <url>http://maven.apache.org</url>
   <dependencies>
-  <dependencies>
 <!-- https://mvnrepository.com/artifact/junit/junit -->
 <!-- https://mvnrepository.com/artifact/javax.mail/mail -->
 <dependency>
