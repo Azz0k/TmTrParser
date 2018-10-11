@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="ASP.NET_SessionId">tda5i4xu4ld2lcxy0yl3sjvd</entry>
+<entry key="ASP.NET_SessionIddomain">online.tmtr.ru</entry>
+<entry key="TMTRCookieversion">0</entry>
+<entry key="TMTRCookiepath">/</entry>
+<entry key="TMTRCookie">Guid=a8d1871e-4993-47bd-9388-ddd10b913101&amp;Login=54cfdacb&amp;PwdHash=59ae1f008d34d75a2c8052b26c81e69f&amp;Expired=1/11/2019 4:58:20 PM</entry>
+<entry key="TMTRCookieage">7948796</entry>
+<entry key="ASP.NET_SessionIdcomment">null</entry>
+<entry key="TMTRCookiesecure">false</entry>
+<entry key="ASP.NET_SessionIdpath">/</entry>
+<entry key="ASP.NET_SessionIdage">-1</entry>
+<entry key="ASP.NET_SessionIdversion">0</entry>
+<entry key="TMTRCookiediscard">false</entry>
+<entry key="ASP.NET_SessionIdhttponly">true</entry>
+<entry key="TMTRCookiecomment">null</entry>
+<entry key="TMTRCookiecommenturl">null</entry>
+<entry key="TMTRCookiedomain">online.tmtr.ru</entry>
+<entry key="ASP.NET_SessionIdcommenturl">null</entry>
+<entry key="TMTRCookieportlist">null</entry>
+<entry key="ASP.NET_SessionIdportlist">null</entry>
+<entry key="ASP.NET_SessionIddiscard">false</entry>
+<entry key="name2">TMTRCookie</entry>
+<entry key="name1">ASP.NET_SessionId</entry>
+<entry key="ASP.NET_SessionIdsecure">false</entry>
+<entry key="TMTRCookiehttponly">false</entry>
+</properties>

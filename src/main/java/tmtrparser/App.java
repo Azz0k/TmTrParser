@@ -30,12 +30,13 @@ public class App
         String password=properties.getProperty("password");
         String inExcelFile=properties.getProperty("from");
         String outExcelFile=properties.getProperty("to");
+        String cookiesFileName=properties.getProperty("cookies");
         SiteConnecton siteConnecton=null;
         try {
-             siteConnecton = new SiteConnecton("http://online.tmtr.ru", loginName, password);
+             siteConnecton = new SiteConnecton("online.tmtr.ru", loginName, password,cookiesFileName);
          }
-         catch (InterruptedException e){
-             //НИНУЖНО
+         catch (Exception e){
+             System.out.println(e.getLocalizedMessage());
          }
 
         ExcelProcessor inputFile=new ExcelProcessor(inExcelFile, true);
@@ -48,7 +49,13 @@ public class App
             System.out.println(e.getLocalizedMessage());
             System.exit(0);
         }
-        System.out.println(siteConnecton.search(inputFile.getCell(0,0)));
+        try {
 
+            System.out.println(siteConnecton.search(inputFile.getCell(0, 0)));
+        }
+        catch (Exception e){
+            System.out.println(e.getLocalizedMessage());
+
+        }
     }
 }
