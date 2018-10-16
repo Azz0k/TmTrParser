@@ -1,8 +1,12 @@
 package tmtrparser;
 
 
+import org.apache.poi.ss.formula.functions.T;
+
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Properties;
 
 /**
@@ -11,8 +15,28 @@ import java.util.Properties;
  */
 public class App 
 {
+
+    static void test(){
+        Iterator<Integer> it1 = Arrays.asList(1, 2, 3).iterator();
+        Iterator<Integer> it2 = Arrays.asList(4, 5, 6).iterator();
+        Iterator<Integer> it3 = Arrays.asList(7, 8, 9).iterator();
+        Iterator<Iterator<Integer>> its = Arrays.asList(it1, it2, it3).iterator();
+        Converter IteratorOfIterators = new Converter();
+        Iterator<Integer> it;
+        it = IteratorOfIterators.convert(its);
+        for (int i = 0; i <10 ; i++) {
+            boolean b=it.hasNext();
+            int c=0;
+            if (b)
+                c=it.next();
+            System.out.println(b+" "+c);
+
+        }
+    }
+
     public static void main( String[] args )
     {
+        test();
         FileInputStream fileInputStream;
         Properties properties = new Properties();
         try {
@@ -38,10 +62,10 @@ public class App
          catch (Exception e){
              System.out.println(e.getLocalizedMessage());
          }
-
+        TmTrPrice[] tmTrPrices=null;
         ExcelProcessor inputFile=new ExcelProcessor(inExcelFile, true);
         try {
-            inputFile.open();
+            tmTrPrices=inputFile.open();
         }
         catch (Exception e)
         {
@@ -50,12 +74,23 @@ public class App
             System.exit(0);
         }
         try {
+ //           for (int i = 0; i <tmTrPrices.length ; i++) {
 
-            System.out.println(siteConnecton.search(inputFile.getCell(0, 0)));
+
+  //              System.out.println(siteConnecton.search(tmTrPrices[i]));
+ //               Thread.sleep(( long)(Math.random() * 30000));
+            System.out.println(siteConnecton.search(tmTrPrices[5]));
+            //}
         }
         catch (Exception e){
             System.out.println(e.getLocalizedMessage());
 
+        }
+        finally {
+            for (int i = 0; i <tmTrPrices.length ; i++) {
+                System.out.println(tmTrPrices[i].toString());
+
+            }
         }
     }
 }

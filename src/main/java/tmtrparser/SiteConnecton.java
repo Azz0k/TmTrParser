@@ -1,6 +1,8 @@
 package tmtrparser;
 
 
+import org.apache.poi.ss.formula.functions.T;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -147,7 +149,7 @@ class SiteConnecton {
             System.out.println("the structure of the authorization document has changed");
             System.exit(0);
         }
-        System.out.println("waiting 30 sec");
+        System.out.println("waiting 10 sec");
         Thread.sleep(10000+(long)(Math.random()*10000));
         String params="__VIEWSTATE="+state+"&";
         params+="__VIEWSTATEGENERATOR="+generator+"&";
@@ -163,14 +165,15 @@ class SiteConnecton {
         cookieManager=httpQuery.getCookieManager();
 
     }
-    private String extractFromSearch(String body){
+    private String extractURLFromSearch(String body){
         Pattern pattern= Pattern.compile("href=\"(.*?)\"");
         Matcher matcher=pattern.matcher(body);
         return matcher.find()?matcher.group(1):null;
 
     }
-    String search(String name) throws Exception
+    String search(TmTrPrice price) throws Exception
     {
+        String name=price.getOurCode();
         if (httpQuery==null) {
             httpQuery = new HttpQuery(hostName, headers, cookieManager);
 
@@ -178,15 +181,112 @@ class SiteConnecton {
 
 
         String params="SearchNumber="+name;//search.aspx?SearchNumber=
-        System.out.println("Searching... Result code="+httpQuery.httpquery("/search.aspx","POST",params));
+        long  resCode;
+        resCode=httpQuery.httpquery("/search.aspx","POST",params);
+        System.out.println("Searching..."+name+"  Result code="+resCode);
+         if (resCode==200) {
+         //    System.out.println(httpQuery.getBody());
+             String body1 =httpQuery.getBody();
+             Pattern patternFirm= Pattern.compile("<td class=\"Margin5\" width=\"180\"><font face=\"Tahoma\">(.*?)<",Pattern.DOTALL+Pattern.MULTILINE);
+             Matcher matcherFirm=patternFirm.matcher(body1);
+             Pattern patternArt= Pattern.compile("ctl00\\$mainPlace\\$gvSKN&#39;,&#39;\\$[0-9]+&#39;[\\)]\">(.*?)</a>",Pattern.DOTALL+Pattern.MULTILINE);
+             Matcher matcherArt=patternArt.matcher(body1);
+             while (matcherArt.find() & matcherFirm.find())
+             {
+                 if ((matcherFirm.group(1).toUpperCase().equals("EBS")) && (matcherArt.group(1).toUpperCase().replaceAll("\\.","").equals(name.toUpperCase())))
+                 {
+                     //params="SearchNumber="+name;
+                     Pattern patternToken=Pattern.compile("id=\"TokenSessionID\" value=\"(.*?)\"",Pattern.DOTALL+Pattern.MULTILINE);
+                     Matcher matcherToken=patternToken.matcher(body1);
+                     Pattern patternCview=Pattern.compile("id=\"__CVIEWSTATE\" value=\"(.*?)\"",Pattern.DOTALL+Pattern.MULTILINE);
+                     Matcher matcherCview=patternCview.matcher(body1);
+                     Pattern patternTarget=Pattern.compile("<a href=\"javascript:__doPostBack[\\(]&#39;(.*?)&#39;,&#39;([\\$0-9]{1,2}?)&#39;[\\)]\">"+matcherArt.group(1)+"</a></font></td>",Pattern.DOTALL+Pattern.MULTILINE);
+                     Matcher matcherTarget=patternTarget.matcher(body1);//Таргет и аргумент
+                     OutputStream output=new ByteArrayOutputStream();
+                     PrintWriter writer= new PrintWriter(new OutputStreamWriter(output,"UTF-8"),true);
+                     String boundary="----WebKitFormBoundaryT2h2In2mJBDPPVqM";
+                     String CRLF="\r\n";
+                     if (matcherToken.find() & matcherCview.find() & matcherTarget.find()) {
+                        writer.append("--"+boundary+CRLF);
+                        writer.append("Content-Disposition: form-data; name=\"TokenSessionID\""+CRLF+CRLF);
+                        writer.append(matcherToken.group(1));
+                        writer.flush();
+                        writer.append(CRLF+"--"+boundary+CRLF);
+                        writer.append("Content-Disposition: form-data; name=\"__EVENTTARGET\""+CRLF+CRLF);
+                        writer.append(matcherTarget.group(1));
+                        writer.flush();
+                        writer.append(CRLF+"--"+boundary+CRLF);
+                        writer.append("Content-Disposition: form-data; name=\"__EVENTARGUMENT\""+CRLF+CRLF);
+                        writer.append(matcherTarget.group(2));
+                        writer.flush();
+                        writer.append(CRLF+"--"+boundary+CRLF);
+                        writer.append("Content-Disposition: form-data; name=\"__CVIEWSTATE\""+CRLF+CRLF);
+                        writer.append(matcherCview.group(1));
+                        writer.flush();
+                        writer.append(CRLF+"--"+boundary+CRLF);
+                        writer.append("Content-Disposition: form-data; name=\"__CVIEWSTATE\""+CRLF+CRLF);
+                        writer.append(matcherCview.group(1));
+                        writer.flush();
 
 
 
+              //           paramsBuilder.append("&");
+                //         paramsBuilder.append("__VIEWSTATE=");
+                  //       paramsBuilder.append("&");
+                    //     paramsBuilder.append("__VIEWSTATEENCRYPTED=");
+                      //   paramsBuilder.append("&");
+                        // paramsBuilder.append("SearchInputHidden=");
+                         //params=paramsBuilder.toString();
 
+                         //params += "&TokenSessionID=" + matcherToken.group(1) + "&__EVENTTARGET=" + matcherTarget.group(1) + "&__EVENTARGUMENT=" + matcherTarget.group(2) + "&__CVIEWSTATE=" + matcherCview.group(1) + "&__VIEWSTATE=";
+                     }
+
+
+                     Thread.sleep(( long)(Math.random() * 30000));
+                     HashMap<String,String> headers1 = new HashMap<>();
+
+
+                     headers1.put("Content-Type", "multipart/form-data; boundary="+boundary);
+
+                     httpQuery.setHeaders(headers1);
+                     httpQuery.httpquery("/search.aspx?SearchNumber="+name,"POST",params);
+                     break;
+                 }
+
+             }
+         }
+
+
+        httpQuery.setHeaders(headers);
         String body =httpQuery.getBody();
-        String newaddress=extractFromSearch(body);
+        String newaddress=extractURLFromSearch(body);
         System.out.println("Searching... Result code="+httpQuery.httpquery(newaddress,"GET",null));
         body =httpQuery.getBody();
+        Pattern patternFirm= Pattern.compile("\" class=\"FirmTH\">(.*?)<",Pattern.DOTALL+Pattern.MULTILINE);
+        Matcher matcherFirm=patternFirm.matcher(body);
+        Pattern patternNumber= Pattern.compile("\" class=\"NumberTH\">(.*?)<",Pattern.DOTALL+Pattern.MULTILINE);
+        Matcher matcherNumber=patternNumber.matcher(body);
+        Pattern patternCount= Pattern.compile("\" class=\"CurCountTH\">(.*?)<",Pattern.DOTALL+Pattern.MULTILINE);
+        Matcher matcherCount=patternCount.matcher(body);
+        Pattern patternPrice= Pattern.compile("<b style=\"font-size: 12px; text-align:center; position: relative\">(.*?)</b>",Pattern.DOTALL+Pattern.MULTILINE);
+        Matcher matcherPrice=patternPrice.matcher(body);
+
+        while (matcherFirm.find() & matcherNumber.find() & matcherCount.find() & matcherPrice.find())
+            {
+                String tempFirm=matcherFirm.group(1).replaceAll("\\W","");
+                String tempNum=matcherNumber.group(1).replaceAll("\\W","");
+                String tempCount=matcherCount.group(1).replaceAll("\\W","");
+                String tempPrice=matcherPrice.group(1).replaceAll("\\W","");
+
+            System.out.println(tempFirm+" "+tempNum+" "+tempCount+" "+tempPrice);
+            if (tempFirm.toUpperCase().equals("EBS"))
+            {
+                price.setTheirCode(tempNum);
+                price.setMinPrice(Integer.parseInt(tempPrice));
+                price.addAvailability(Integer.parseInt(tempCount));
+            }
+            }
+       //     System.out.println(body);
         return "";
     }
     private boolean firstTouch() throws Exception
@@ -195,9 +295,9 @@ class SiteConnecton {
             httpQuery =new HttpQuery(hostName,headers,cookieManager);
 
         if (httpQuery.httpquery("/main.aspx","GET",null)!=200){
-            String body =httpQuery.getBody();
-            System.out.println(body);
-            System.out.println("Can't connect to site "+hostName+ ". Please check your internet connection");
+        //    String body =httpQuery.getBody();
+        //    System.out.println(body);
+            System.out.println("Cookies did not fit. Trying to authenticate");
             //System.exit(0);
         }
 

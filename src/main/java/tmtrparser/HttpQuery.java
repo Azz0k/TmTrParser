@@ -1,6 +1,7 @@
 package tmtrparser;
 
 
+import java.io.InputStream;
 import java.net.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -16,13 +17,15 @@ import java.util.HashMap;
     private String body;
 
 
-
+    private InputStream inputStream;
     private long statuscode;
     private HashMap<String, String> headers;
 
     private CookieManager cookieManager;
 
-
+     public void setInputStream(InputStream inputStream) {
+         this.inputStream = inputStream;
+     }
 
      long getStatuscode() {
 
@@ -36,9 +39,9 @@ import java.util.HashMap;
 
     }
 
-
-
-
+     public void setHeaders(HashMap<String, String> headers) {
+         this.headers = headers;
+     }
 
      String getBody() {
         return body;
@@ -74,6 +77,7 @@ import java.util.HashMap;
             httpRequestBuilder.GET();
         else if (method.toUpperCase().equals("POST"))
                 httpRequestBuilder.POST(HttpRequest.BodyPublishers.ofString(params));
+
         HttpRequest httpRequest=httpRequestBuilder.build();
         HttpResponse<String> response =httpClient.send(httpRequest,HttpResponse.BodyHandlers.ofString());
         body=response.body();
